@@ -174,7 +174,7 @@ public class YourConnector : IYourConnector
 
 ### Entry/Exit Logging (Required Pattern)
 
-**All message handlers and saga handlers MUST log entry and exit points.**
+**All message handlers and saga handlers MUST log entry with "<prefix>: Starting ..." and exit points with "<prefix>: Done...".**
 
 ```csharp
 public async Task Handle(YourCommand cmd, IMessageHandlerContext context)
