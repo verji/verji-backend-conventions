@@ -364,7 +364,7 @@ public class YourSaga : Saga<YourSagaData>,
 
 ### Multiple Trigger Events
 
-Sagas can be started by different events, useful when multiple paths lead to the same workflow:
+Sagas can be started by different events, useful when multiple paths lead to the same workflow, or there may be races between events related to the same saga:
 
 ```csharp
 public class EnsureMetadataForVerjiRoomSaga : Saga<EnsureMetadataForVerjiRoomSagaData>,
@@ -772,7 +772,7 @@ public class EnsureMetadataForVerjiRoomSaga : Saga<EnsureMetadataForVerjiRoomSag
 - [ ] Fallback strategies for missing events
 - [ ] Graceful saga completion on errors
 - [ ] Progress flags prevent duplicate work
-- [ ] Business results persisted to domain objects via Marten
+- [ ] Business results persisted to domain objects via Marten, or via REST/API calls to external systems
 
 ### Transaction Boundaries
 
@@ -815,3 +815,4 @@ Study these sagas for complete examples:
   - Pause/resume pattern
   - Extensive timeout handling with fallbacks
   - Delegation to multiple external handlers
+
