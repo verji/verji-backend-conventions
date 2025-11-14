@@ -6,7 +6,7 @@ This document describes Verji's patterns and conventions for implementing NServi
 
 NServiceBus is the backbone of Verji's event-driven architecture, enabling reliable message-based communication between microservices. Our implementation emphasizes:
 
-- **CQRS Pattern** - APIs handle queries, ESB handlers process commands
+- **CQRS Pattern** - APIs handle queries, ESB handlers process commands to persiste data and cause side effects
 - **Event-Driven Architecture** - Services communicate via commands and events
 - **Saga Orchestration** - Long-running workflows coordinate multiple services
 - **Transactional Consistency** - OutBox pattern ensures message delivery with database changes
@@ -20,11 +20,11 @@ Commands represent actions to be performed. They have exactly one handler.
 - Shared across services
 - Part of the public contract
 - Used for inter-service communication
-- Examples: `EnsureVsysIsInRoomCommand`, `AddTenantInfoToRoomCommand`, `ValidateTenantCommand`
+- Examples: `EnsureVsysIsInRoomCommand`, `AddTenantInfoToRoomCommand`
 
 **Internal Commands** (defined within handler/saga files):
 - Private to a single saga or handler
-- Used for saga flow control
+- Used for saga flow control, and controls transaction boundaries (each handler executes in separate transactions) 
 - Not exposed in Abstractions assemblies
 - Examples: `StartEnsureMetadataForVerjiRoomSagaCommand`, `ContinueEnsureMetadataForVerjiRoomSagaCommand`, `ValidateRoomAndFindParentSpaceCommand`
 
@@ -815,4 +815,5 @@ Study these sagas for complete examples:
   - Pause/resume pattern
   - Extensive timeout handling with fallbacks
   - Delegation to multiple external handlers
+
 
