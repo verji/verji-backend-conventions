@@ -16,6 +16,11 @@ NServiceBus is the backbone of Verji's event-driven architecture, enabling relia
 ### Commands (Imperative)
 Commands represent actions to be performed. They have exactly one handler.
 
+**Command Construction**:
+- Command properties have private setters
+- Commands are created using public constructor with parameters 
+   - example: `var cmd = new MyCommand(correlationId, commandArg1, commandArg2);`
+
 **Public Commands** (in `*.Esb.Abstractions` assemblies):
 - Shared across services
 - Part of the public contract
@@ -815,5 +820,6 @@ Study these sagas for complete examples:
   - Pause/resume pattern
   - Extensive timeout handling with fallbacks
   - Delegation to multiple external handlers
+
 
 
