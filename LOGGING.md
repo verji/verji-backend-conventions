@@ -9,7 +9,7 @@ All Verji backend services use **Serilog** for structured logging. Structured lo
 - **Queryable logs** - Search by specific field values (JobId, TenantId, etc.)
 - **Distributed tracing** - Track requests across services via CorrelationId
 - **Contextual enrichment** - Automatic inclusion of Environment, Host, Application info
-- **Multiple sinks** - Console, file, Seq, OpenTelemetry integration
+- **Multiple sinks** - Console, file, OpenTelemetry integration
 
 ## Application Startup Configuration
 
