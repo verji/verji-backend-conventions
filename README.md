@@ -29,6 +29,18 @@ This repository is organized by technology and architectural concern:
   - Delegation patterns
   - Timeout handling and fallback strategies
 
+- **[LOGGING.md](./LOGGING.md)** - Structured logging conventions with Serilog
+  - Serilog startup configuration and enrichers
+  - Dependency injection patterns (Autofac + ILogger)
+  - Entry/exit logging requirements for handlers/sagas
+  - Structured logging vs string interpolation anti-patterns
+  - Standard parameter names (HandlerType, CorrelationId, TenantId, etc.)
+  - Log levels (Information, Warning, Error, Debug)
+  - CorrelationId propagation for distributed tracing
+  - Exception logging with context
+  - API request logging middleware
+  - Configuration checklist and common mistakes
+
 ### Planned Documentation
 
 - **MARTEN.md** - Marten document database patterns
@@ -36,12 +48,6 @@ This repository is organized by technology and architectural concern:
   - Session lifecycle and OutBox integration
   - Patch operations and bulk updates
   - Event store patterns
-
-- **LOGGING.md** - Structured logging conventions
-  - Serilog configuration
-  - Log level guidelines
-  - CorrelationId propagation
-  - OpenTelemetry integration
 
 - **TESTING.md** - Testing patterns and practices
   - xUnit conventions
@@ -90,6 +96,17 @@ This project follows Verji's standard NServiceBus patterns.
 **Project-specific details:**
 - Main handler location: `YourProject.Esb.Handlers/`
 - Example saga: `YourSpecificSaga.cs`
+
+## Logging Patterns
+
+This project follows Verji's standard Serilog patterns.
+
+**For detailed guidance, see:**
+- [Logging Conventions](https://github.com/verji/verji-backend-conventions/blob/main/LOGGING.md)
+
+**Project-specific details:**
+- Additional sinks: Seq at https://seq.verji.internal
+- Log level overrides in appsettings.Production.json
 
 ## Marten Data Access
 
