@@ -65,7 +65,7 @@ public interface IBaseMartenRepository
 Sessions are created per operation using the `LightweightSession` method:
 
 ```csharp
-using (var session = DocStore.LightweightSession(TenantId))
+using (var session = DocStore.LightweightSession(dbTenant))
 {
     // Perform operations
     await session.SaveChangesAsync(); // Commit if needed
@@ -75,7 +75,7 @@ using (var session = DocStore.LightweightSession(TenantId))
 **Key Points:**
 - Sessions are **never** stored as fields - always create fresh per operation
 - Use `using` statement to ensure proper disposal
-- TenantId parameter is currently static (e.g., `"*VMX-DEFAULT*"`) - reserved for future database-level multi-tenancy
+- dbTenant parameter is currently static (e.g., `"*VMX-DEFAULT*"`) - reserved for future database-level multi-tenancy
 - Multi-tenancy is currently implemented via access control rules (see Access Control Pattern section)
 
 ### Session Lifecycle
@@ -84,7 +84,7 @@ using (var session = DocStore.LightweightSession(TenantId))
 // CORRECT: Session created, used, and disposed
 public async Task<TDto> GetById<TAgg, TDto>(string id) where TAgg : notnull
 {
-    using (var session = DocStore.LightweightSession(TenantId))
+    using (var session = DocStore.LightweightSession(dbTenant))
     {
         var aggregate = await Repo.GetById<TAgg>(session, id);
         var result = Mapper.Map<TDto>(aggregate);
@@ -509,7 +509,7 @@ var results = await dbQuery.ToPagedListAsync(pageNum, pageSize);
 Multi-tenancy and data isolation are implemented via **access control rules**, not database-level separation. Each aggregate has an ACL (Access Control List) that defines who can access it.
 
 **Current Implementation:**
-- TenantId in Marten sessions is static (reserved for future database-level multi-tenancy)
+- dbTenant in Marten sessions is static (reserved for future database-level multi-tenancy)
 - Multi-tenancy via ACL arrays and AcContext filtering
 - Defense in depth: query-level filtering based on tenant membership
 
