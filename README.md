@@ -41,13 +41,16 @@ This repository is organized by technology and architectural concern:
   - API request logging middleware
   - Configuration checklist and common mistakes
 
-### Planned Documentation
+- **[MARTEN_REPOSITORIES.md](./MARTEN_REPOSITORIES.md)** - Marten repository pattern and data access
+  - Repository pattern and base classes
+  - Session management and lifecycle
+  - Query patterns with AddQueryTerms extensibility
+  - Creating specialized base classes for shared domain logic
+  - Access control pattern for multi-tenancy (ACL + AcContext)
+  - CRUD operations and pagination
+  - Creating custom repositories
 
-- **MARTEN.md** - Marten document database patterns
-  - Multi-tenancy with tenant resolution
-  - Session lifecycle and OutBox integration
-  - Patch operations and bulk updates
-  - Event store patterns
+### Planned Documentation
 
 - **TESTING.md** - Testing patterns and practices
   - xUnit conventions
@@ -108,14 +111,17 @@ This project follows Verji's standard Serilog patterns.
 - Additional sinks: Seq at https://seq.verji.internal
 - Log level overrides in appsettings.Production.json
 
-## Marten Data Access
+## Marten Repository Pattern
+
+This project follows Verji's standard Marten repository patterns.
 
 **For detailed guidance, see:**
-- [Marten Patterns](https://github.com/verji/verji-backend-conventions/blob/main/MARTEN.md)
+- [Marten Repository Conventions](https://github.com/verji/verji-backend-conventions/blob/main/MARTEN_REPOSITORIES.md)
 
 **Project-specific details:**
 - Database: PostgreSQL 14
-- Tenant resolution: `IResolveTenants` service
+- Repository location: `YourProject.Api.Service/DomainAccess/`
+- Example repository: `YourDomainRepository.cs`
 ```
 
 ### For AI Coding Assistants
