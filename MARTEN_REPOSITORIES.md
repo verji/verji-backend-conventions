@@ -24,8 +24,8 @@ The dependency chain flows: **Connector → Repository → Domain**
 ```
 Aggregates:
 IAggregate
-    └── BaseAggregate
-            ├── OwnableAggregate (with ACL support)
+    └── BaseAggregate (with ACL support)
+            ├── OwnableAggregate (for aggregates with ownership concept)
             └── Your domain aggregates
 
 Repositories:
@@ -515,7 +515,7 @@ Multi-tenancy and data isolation are implemented via **access control rules**, n
 
 ### OwnableAggregate and ACL
 
-Domain aggregates inherit from `OwnableAggregate` to support ACL:
+Domain aggregates typically inherit from `BaseAggregate`. Use `OwnableAggregate` (which inherits from `BaseAggregate`) when the aggregate has an ownership concept - where the owner gets additional privileges or visibility for the object:
 
 ```csharp
 public abstract class OwnableAggregate : BaseAggregate, IOwnable
@@ -990,7 +990,8 @@ public class SigningLicenseRepository : BaseLicenseRepository,
 - [ ] `ToPagedListAsync` used for all paginated queries
 
 ### Access Control
-- [ ] Domain aggregates inherit from `OwnableAggregate` when ACL needed
+- [ ] Domain aggregates inherit from `BaseAggregate` (all aggregates have ACL support)
+- [ ] Domain aggregates inherit from `OwnableAggregate` when ownership concept needed
 - [ ] `Acl` property returns relevant IDs (tenant, owner, etc.)
 - [ ] Repository provides overloads with/without `AcContext`
 - [ ] `AccessControlTerms` applied before business filters
