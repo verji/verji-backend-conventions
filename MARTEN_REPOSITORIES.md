@@ -518,13 +518,22 @@ Multi-tenancy and data isolation are implemented via **access control rules**, n
 Domain aggregates inherit from `OwnableAggregate` to support ACL:
 
 ```csharp
-public abstract class OwnableAggregate : BaseAggregate
+public abstract class OwnableAggregate : BaseAggregate, IOwnable
 {
-    public string? OwnerId { get; set; }
-    public string? OwnerName { get; set; }
+    protected OwnableAggregate(string id) : base(id)
+    {
+        OwnerId = string.Empty;
+    }
 
-    // Override to define access control
-    public abstract override string[] Acl { get; }
+    protected OwnableAggregate(string id, string ownerId) : base(id)
+    {
+        OwnerId = ownerId;
+    }
+
+    public string OwnerId { get; private set; }
+
+    // Default ACL implementation (can be overridden)
+    public override string[] Acl => new[] { Id, OwnerId };
 }
 ```
 
