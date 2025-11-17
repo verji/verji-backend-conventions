@@ -489,7 +489,7 @@ public IQueryable<TLicense> AddQueryTerms<TLicense>(
 
 ### Pagination
 
-All queries use `ToPagedListAsync` for consistent pagination:
+Queries commonly use `ToPagedListAsync` for pagination:
 
 ```csharp
 var results = await dbQuery.ToPagedListAsync(pageNum, pageSize);
@@ -563,48 +563,20 @@ public class SigningOrder : OwnableAggregate
 
 ### AcContext (Access Control Context)
 
-The `AcContext` contains user's tenant memberships and roles:
+The `AcContext` contains user identity and role information for access control filtering.
 
-```csharp
-public class AcContext
-{
-    // Tenants the user has access to
-    public string[] Tenants { get; set; }
-
-    // Groups that grant superuser access (bypasses filtering)
-    public string[]? SuperuserGroups { get; set; }
-
-    // User's ID
-    public string UserId { get; set; }
-}
-```
+**Note:** AcContext creation, population, and AccessControlTerms implementation details are encapsulated in RosbergCommon and will be covered in dedicated AccessControl documentation.
 
 ### AccessControlTerms Extension
 
-The `AccessControlTerms` extension method filters queries by ACL membership:
+The `AccessControlTerms` extension method (from RosbergCommon) filters queries based on the aggregate's ACL array and the user's access rights:
 
 ```csharp
-// Conceptual implementation (from Rosberg.Common package)
-public static IQueryable<TAggregate> AccessControlTerms<TAggregate>(
-    this IQueryable<TAggregate> query,
-    AcContext context)
-    where TAggregate : IAggregate
-{
-    // Build allowed ACL values from user context
-    var allowedAcl = new[] { context.UserId }
-        .Concat(context.Tenants)
-        .ToArray();
-
-    // Superusers bypass filtering
-    if (context.SuperuserGroups != null && context.SuperuserGroups.Any())
-    {
-        return query; // No filter applied
-    }
-
-    // Filter: aggregate's ACL must contain at least one allowed value
-    return query.Where(agg => agg.Acl.Any(acl => allowedAcl.Contains(acl)));
-}
+// Apply access control filtering
+query = query.AccessControlTerms(context);
 ```
+
+This extension method filters the query to return only aggregates where the user has access based on the ACL matching rules defined in RosbergCommon.
 
 ### Repository Methods with Access Control
 
