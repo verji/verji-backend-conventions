@@ -429,7 +429,7 @@ public async Task CanStoreAndRetrieveOrganizations()
     var orgIds = organizations.Select(o => o.Id).ToArray();
 
     // Act - Store data
-    await using (var session = docStore.LightweightSession(tenantId))
+    await using (var session = docStore.LightweightSession(dbTenant))
     {
         foreach (var org in organizations)
         {
@@ -439,7 +439,7 @@ public async Task CanStoreAndRetrieveOrganizations()
     }
 
     // Assert - Retrieve and verify
-    await using (var session = docStore.LightweightSession(tenantId))
+    await using (var session = docStore.LightweightSession(dbTenant))
     {
         var retrieved = await repo.GetByIds<Organization>(session, orgIds);
         Check.That(retrieved).HasSize(5);
@@ -500,14 +500,14 @@ public ContainerBuilder GetBuilderForTenant(string tenantId, IConfiguration conf
 
 ```csharp
 // Write data
-await using (var session = docStore.LightweightSession(tenantId))
+await using (var session = docStore.LightweightSession(dbTenant))
 {
     repo.Store(session, aggregate);
     await session.SaveChangesAsync();  // Commit
 }
 
 // Read data (separate session)
-await using (var session = docStore.LightweightSession(tenantId))
+await using (var session = docStore.LightweightSession(dbTenant))
 {
     var result = await repo.GetById<MyAggregate>(session, id);
     Check.That(result).IsNotNull();
@@ -1208,7 +1208,7 @@ public async Task CanGetOrganizationsByIds_WithAccessControl()
     var evenIds = allIds.Where((id, idx) => idx % 2 == 1).ToArray();
 
     // Store all organizations
-    await using (var session = docStore.LightweightSession(tenantId))
+    await using (var session = docStore.LightweightSession(dbTenant))
     {
         foreach (var org in organizations)
         {
@@ -1225,7 +1225,7 @@ public async Task CanGetOrganizationsByIds_WithAccessControl()
         ActiveRoles = oddIds  // User has access to odd IDs only
     };
 
-    await using (var session = docStore.LightweightSession(tenantId))
+    await using (var session = docStore.LightweightSession(dbTenant))
     {
         var accessibleOrgs = await repo.GetByIds<Organization>(
             acContext,
