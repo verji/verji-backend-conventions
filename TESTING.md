@@ -4,7 +4,7 @@ This document describes Verji's patterns and conventions for testing backend ser
 
 ## Overview
 
-Verji backend services emphasize **integration testing** with real dependencies over isolated unit tests. Tests use real databases, real message handlers, and comprehensive state verification.
+Verji backend services follow a pragmatic testing approach that emphasizes mocking for most tests, with real database integration when persistence is one of the test goals.
 
 **Testing Frameworks:**
 - **xUnit** - Test framework
@@ -14,11 +14,14 @@ Verji backend services emphasize **integration testing** with real dependencies 
 - **Marten** - Document database for integration tests
 
 **Testing Philosophy:**
-- Integration tests over unit tests
-- Real database over in-memory/fake
-- Test complete workflows, not just individual methods
+- **Prefer mocking** for unit tests (testing isolated behavior)
+- **Prefer mocking** for integration tests (testing component interactions)
+- **Use real database** when testing persistence is one of the test goals
+- Test complete workflows with mocked dependencies
 - Verify state changes and message flows
-- Use method names for test isolation
+- Legacy tests may use real databases more broadly - this reflects historical practice
+
+**Note:** Many existing tests use real databases. This reflects historical practice, not current best practice. When writing new tests or modifying existing ones, prefer mocking unless persistence/database behavior is one of the goals you're testing.
 
 ## Assertion Library Policy
 
@@ -404,6 +407,17 @@ await saga.Handle(roomCreatedEvent, context);
 
 ## Repository and Database Testing
 
+**When to use database-backed tests:**
+- Testing persistence is one of the test goals (Store/SaveChanges/Retrieve cycle)
+- Verifying Marten query generation and execution
+- Testing repository methods that rely on database-specific behavior
+- Testing database-specific features (indexes, complex queries, etc.)
+
+**When to prefer mocking:**
+- Testing business logic in handlers/sagas (mock the repository)
+- Testing API endpoints (mock repository layer)
+- Testing behavior that doesn't depend on actual database operations
+
 ### Real Database Integration Tests
 
 **Initialize Test Database:**
@@ -754,6 +768,80 @@ repoMock.Verify(
     r => r.Store(It.IsAny<IDocumentSession>(), It.IsAny<MyAggregate>()),
     Times.AtLeastOnce);
 ```
+
+## Mocking Repositories and Sessions
+
+**Prefer mocking for most tests unless persistence is one of the test goals.**
+
+### Mocking IDocumentSession
+
+```csharp
+var sessionMock = new Mock<IDocumentSession>();
+
+// Setup Store
+sessionMock.Setup(s => s.Store(It.IsAny<Organization>()))
+    .Verifiable();
+
+// Setup SaveChangesAsync
+sessionMock.Setup(s => s.SaveChangesAsync(It.IsAny<CancellationToken>()))
+    .Returns(Task.CompletedTask);
+
+// Use in test
+await repo.StoreOrUpdate(sessionMock.Object, org);
+await sessionMock.Object.SaveChangesAsync();
+
+// Verify Store was called
+sessionMock.Verify(s => s.Store(It.IsAny<Organization>()), Times.Once);
+sessionMock.Verify(s => s.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+```
+
+### Mocking Repository
+
+```csharp
+var repoMock = new Mock<IOrganizationRepository>();
+
+// Setup GetById
+repoMock.Setup(r => r.GetById<Organization>(
+    It.IsAny<IDocumentSession>(),
+    "org-123"))
+    .ReturnsAsync(testOrganization);
+
+// Setup GetByIds with access control
+repoMock.Setup(r => r.GetByIds<Organization>(
+    It.IsAny<AcContext>(),
+    It.IsAny<IDocumentSession>(),
+    It.IsAny<string[]>()))
+    .ReturnsAsync(accessibleOrgs);
+
+// Setup StoreOrUpdate
+repoMock.Setup(r => r.StoreOrUpdate(
+    It.IsAny<IDocumentSession>(),
+    It.IsAny<Organization>()))
+    .Returns(Task.CompletedTask);
+
+// Use in handler/saga
+var org = await repoMock.Object.GetById<Organization>(session, "org-123");
+Check.That(org).IsNotNull();
+
+// Verify methods were called
+repoMock.Verify(r => r.GetById<Organization>(
+    It.IsAny<IDocumentSession>(),
+    "org-123"), Times.Once);
+```
+
+### When to Mock vs Real Database
+
+**Use mocked session/repository:**
+- Testing saga logic that calls repository methods
+- Testing handler behavior with repository dependencies
+- Testing business logic in connectors or services
+- Fast feedback loop for behavior verification
+
+**Use real database:**
+- Testing that data persists correctly
+- Testing complex Marten queries
+- Testing repository implementation itself
+- Verifying database roundtrip behavior
 
 ## Assertion Patterns
 
@@ -1415,6 +1503,12 @@ var builder = GetBuilderForTenant(testContext, _config);
 ```
 
 ## Best Practices Checklist
+
+### Test Strategy
+- [ ] Prefer mocking for unit and integration tests
+- [ ] Use real database only when persistence is one of the test goals
+- [ ] Mock IDocumentSession and repositories for saga/handler tests
+- [ ] Verify mock calls when testing interactions
 
 ### Test Structure
 - [ ] Test class named `Test{ClassUnderTest}`
