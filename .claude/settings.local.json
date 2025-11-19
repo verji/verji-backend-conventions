@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nAdd MARTEN_REPOSITORIES.md documentation\n\n- Comprehensive Marten repository pattern documentation\n- Session management and lifecycle patterns\n- Query extensibility with AddQueryTerms\n- Specialized base class pattern for shared domain logic\n- Access control pattern for multi-tenancy (ACL + AcContext)\n- Complete examples from RosbergCommon, verji-signing, verji-itops\n- Update README.md to include MARTEN_REPOSITORIES.md in Current Documentation\n- Update project CLAUDE.md template with Marten repository example\nEOF\n)\")",
+      "Bash(git push:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nCorrect MARTEN_REPOSITORIES.md - simplify AcContext and fix pagination\n\n- Simplify AcContext section: remove detailed implementation, note encapsulation in RosbergCommon\n- Show AccessControlTerms usage pattern, not internal implementation\n- Fix pagination: change from \"All queries use\" to \"Queries commonly use\" (optional, not mandatory)\n- Note that AcContext details will be covered in dedicated AccessControl documentation\nEOF\n)\")",
+      "Bash(git commit:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

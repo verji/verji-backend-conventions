@@ -50,13 +50,18 @@ This repository is organized by technology and architectural concern:
   - CRUD operations and pagination
   - Creating custom repositories
 
-### Planned Documentation
+- **[TESTING.md](./TESTING.md)** - Testing patterns and practices
+  - Assertion library policy (NFluent for new tests, FluentAssertions legacy)
+  - Test structure conventions and naming
+  - Saga testing with NServiceBus.Testing framework
+  - Repository and database testing with real Marten instances
+  - Mocking patterns with Moq (including IIndex<string, T>)
+  - Theory and parameterized testing with InlineData
+  - Complete test examples from actual implementations
+  - Testing utilities and helpers
+  - Best practices checklist
 
-- **TESTING.md** - Testing patterns and practices
-  - xUnit conventions
-  - Moq and NFluent usage
-  - Integration test patterns
-  - Test data management
+### Planned Documentation
 
 - **CASBIN.md** - Access control patterns
   - Casbin RBAC/ABAC configuration
