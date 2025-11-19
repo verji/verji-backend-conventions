@@ -972,8 +972,8 @@ public class SigningLicenseRepository : BaseLicenseRepository,
 - [ ] Sessions created with `using` statement for automatic disposal
 - [ ] Sessions never stored as fields - always local variables
 - [ ] Sessions passed as method parameters to repositories
-- [ ] `SaveChangesAsync()` called after `Store()` or `Delete()` operations
-- [ ] TenantId parameter recognized as static (not used for data isolation)
+- [ ] Caller calls `SaveChangesAsync()` after `Store()` or `Delete()` operations
+- [ ] dbTenant parameter recognized as static (not used for data isolation)
 
 ### Repository Design
 - [ ] Repository inherits from `BaseMartenRepository` (or specialized base)
