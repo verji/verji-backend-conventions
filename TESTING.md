@@ -531,18 +531,34 @@ await using (var session = docStore.LightweightSession(dbTenant))
 
 ### Database Cleanup
 
-**Option 1: DeleteWhere with session action**
+**Cleanup is NOT needed in new tests** because:
+
+1. **`InitTestDbAsync` creates a fresh database** - Each test run starts with a clean database
+2. **Test isolation via `GetMyMethodName()`** - Each test uses a unique dbTenant for session isolation
 
 ```csharp
+// Fresh database for each test run
+await TestExtensions.InitTestDbAsync(_config, "unittest");
+
+// Unique dbTenant per test = no conflicts between tests
+var testContext = GetMyMethodName();
+var builder = GetBuilderForTenant(testContext);
+```
+
+**Legacy Cleanup Patterns (do not use in new tests):**
+
+You may find cleanup code in existing tests like:
+
+```csharp
+// Legacy pattern - found in existing tests
 await TestExtensions.RunSessionActionForTenantAsync(_config, container, session =>
 {
-    session.DeleteWhere<Organization>(org => true);  // Delete all
+    session.DeleteWhere<Organization>(org => true);
+    session.DeleteWhere<Person>(p => p.TenantId == testTenantId);
 });
 ```
 
-**Option 2: Test isolation (preferred)**
-
-Use unique tenant ID per test via `GetMyMethodName()` - no cleanup needed.
+This reflects historical practice before `InitTestDbAsync` and test isolation patterns were established. **Do not add cleanup code to new tests.**
 
 ### Test Data Creation
 
@@ -1324,12 +1340,6 @@ public async Task CanGetOrganizationsByIds_WithAccessControl()
         Check.That(accessibleOrgs).HasSize(oddIds.Length);
         Check.That(accessibleOrgs.Select(o => o.Id)).ContainsExactly(oddIds);
     }
-
-    // Cleanup
-    await TestExtensions.RunSessionActionForTenantAsync(_config, container, session =>
-    {
-        session.DeleteWhere<Organization>(org => true);
-    });
 }
 ```
 
@@ -1433,13 +1443,14 @@ public async Task TestGetTenantInfo_Success(string roomId, string tenantId)
 **Database initialization and session actions:**
 
 ```csharp
-// Initialize test database
+// Initialize test database (creates fresh database)
 await TestExtensions.InitTestDbAsync(_config, "unittest");
 
 // Ensure connection works
 TestExtensions.EnsureConnectionPossible(_config, container);
 
-// Run session action for tenant
+// Run session action for dbTenant (legacy pattern - found in old tests)
+// Do not use for cleanup in new tests
 await TestExtensions.RunSessionActionForTenantAsync(_config, container, session =>
 {
     session.DeleteWhere<Organization>(org => true);
