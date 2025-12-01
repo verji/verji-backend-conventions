@@ -61,6 +61,18 @@ This repository is organized by technology and architectural concern:
   - Testing utilities and helpers
   - Best practices checklist
 
+- **[DEPENDENCY_INJECTION.md](./DEPENDENCY_INJECTION.md)** - Dependency injection patterns with Autofac
+  - ServiceCollection + Autofac dual container approach
+  - Startup class structure (ConfigureServices vs ConfigureContainer)
+  - Basic registration patterns and lifetime scopes
+  - Autofac Modules for organized registrations
+  - Extension method pattern for fluent configuration
+  - Keyed/Named dependencies with `.Keyed<T>()` and `IIndex<TKey, TValue>`
+  - Attribute-based filtering with `[KeyFilter]`
+  - Configuration-driven SDK variant registrations
+  - Common patterns (Serilog, AutoMapper, Polly)
+  - Anti-patterns and checklist
+
 ### Planned Documentation
 
 - **CASBIN.md** - Access control patterns
@@ -127,6 +139,17 @@ This project follows Verji's standard Marten repository patterns.
 - Database: PostgreSQL 14
 - Repository location: `YourProject.Api.Service/DomainAccess/`
 - Example repository: `YourDomainRepository.cs`
+
+## Dependency Injection
+
+This project follows Verji's standard DI patterns with Autofac.
+
+**For detailed guidance, see:**
+- [Dependency Injection Conventions](https://github.com/verji/verji-backend-conventions/blob/main/DEPENDENCY_INJECTION.md)
+
+**Project-specific details:**
+- Startup location: `YourProject.Api/Startup.cs`
+- Config extensions: `YourProject.Host/Config/ConfigExtensions.cs`
 ```
 
 ### For AI Coding Assistants
@@ -185,8 +208,10 @@ When using Claude Code, GitHub Copilot, or similar tools:
 │  Organization-wide patterns and standards   │
 │                                             │
 │  - NSERVICEBUS.md                           │
-│  - MARTEN.md                                │
+│  - MARTEN_REPOSITORIES.md                   │
 │  - LOGGING.md                               │
+│  - TESTING.md                               │
+│  - DEPENDENCY_INJECTION.md                  │
 │  └─ Reusable across ALL projects           │
 └─────────────────────────────────────────────┘
                     ▲
